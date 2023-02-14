@@ -4,7 +4,8 @@
   "description": "Your name or CVTC username",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "mkdir -p tmp && pushd views/pages && npx ejs index.ejs -o ../../tmp/index.html && npx ejs about.ejs -o ../../tmp/about.html && popd && vnu tmp/*.html && npx eslint \"**/*.js\" \"**/*.html\" && npx stylelint tmp/*.html \"**/*.css\" && rm -rf tmp/*"
   },
   "repository": {
     "type": "git",
