@@ -14,9 +14,12 @@ app
     res.status(200).send('healthy')
   })
   .get('/', function (req, res) {
-    res.render('pages/index', '')
+    res.render('pages/index', {})
   })
   .get('/about', function (req, res) {
-    res.render('pages/about', '')
+    res.render('pages/about', {})
   })
+  .use((req, res) => {
+    res.status(404).render('pages/error', {})
+  })//error-handling
   .listen(PORT, () => console.log(`Listening on ${PORT}`))
