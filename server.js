@@ -21,5 +21,5 @@ app
   })
   .use((req, res) => {
     res.status(404).render('pages/error', {})
-  })//error-handling
+  })// error-handling
   .listen(PORT, () => console.log(`Listening on ${PORT}`))
