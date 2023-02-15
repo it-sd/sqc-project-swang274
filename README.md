@@ -8,4 +8,4 @@ can help everyone in the group see the plans/notes for each trip stop.
 
 [Render Site](https://trip-planner-2ozd.onrender.com)
 
-4. jzarins2 can handle rejection
+4. Hello from jzarins2!
