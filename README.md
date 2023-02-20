@@ -7,3 +7,5 @@ Use the map feature to figure out the perfect trip routes for everyone in the gr
 can help everyone in the group see the plans/notes for each trip stop.
 
 [Render Site](https://trip-planner-2ozd.onrender.com)
+
+4. skukuk1 can handle rejection.
