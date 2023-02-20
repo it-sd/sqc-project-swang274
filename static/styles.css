@@ -1,0 +1,58 @@
+/* Reset styles */
+/* Add any browser reset styles or custom reset styles here */
+
+/* Global styles */
+body {
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+  }
+
+  a {
+    color: #0077cc;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* Layout styles */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* Component styles */
+  .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #0077cc;
+    color: #fff;
+    border-radius: 4px;
+  }
+
+  /* Utility classes */
+  .text-center {
+    text-align: center;
+  }
+
+  .text-uppercase {
+    text-transform: uppercase;
+  }
+
+  .text-muted {
+    color: #999;
+  }
+
+  /* Media queries */
+  @media (max-width: 767px) {
+    .container {
+      max-width: 100%;
+      padding: 0 10px;
+    }
+  }
+
+  /* Add any additional styles as needed */
