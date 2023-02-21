@@ -4,8 +4,10 @@
   "description": "Your name or CVTC username",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "mkdir -p tmp && pushd views/pages && npx ejs index.ejs -o ../../tmp/index.html && npx ejs about.ejs -o ../../tmp/about.html && popd && vnu tmp/*.html && npx eslint \"**/*.js\" \"**/*.html\" && npx stylelint tmp/*.html \"**/*.css\" && rm -rf tmp/*"
+    "test": "jasmine",
+    "coverage": "nyc npm test",
+    "lint": "mkdir -p tmp && pushd views/pages && npx ejs index.ejs -o ../../tmp/index.html && npx ejs about.ejs -o ../../tmp/about.html && popd && vnu tmp/*.html && npx eslint \"**/*.js\" \"**/*.html\" && npx stylelint tmp/*.html \"**/*.css\" && rm -rf tmp/*",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -22,11 +24,15 @@
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.6.1",
-    "eslint-plugin-promise": "^6.1.1"
+    "eslint-plugin-promise": "^6.1.1",
+    "jasmine": "^4.5.0",
+    "nyc": "^15.1.0"
   },
   "dependencies": {
     "ejs": "^3.1.8",
     "express": "^4.18.2",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "dotenv": "^16.0.3",
+    "pg": "^8.8.0"
   }
 }
