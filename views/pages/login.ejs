@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Login</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" href="/favicon-16x16.png" type="image/png">
+  <link rel="icon" href="/favicon-32x32.png" type="image/png">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" type="text/css" href="/styles.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+  <main>
+    <div class="container" id="login_container">
+        <h1>Login</h1>
+        <form method="POST" action="/login" class="px-4 py-3">
+            <div class="mb-3">
+                <label for="email_login" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email_login" name="email_login" placeholder="email@example.com">
+            </div>
+            <div class="mb-3">
+                <label for="password_login" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password_login" name="password_login" placeholder="Password">
+            </div>
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me">
+                    <label class="form-check-label" for="remember_me">
+                        Remember me
+                    </label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="sign_in">Sign in</button>
+        </form>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" id="sign_up_btn" href="#">New around here? Sign up</a>
+    </div>
+
+    <div class="container" id="create_user_container">
+        <h1 id="create_user_h1">Create User</h1>
+        <form method="POST" action="/create_user">
+            <div class="mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="firstName" name="firstName" required>
+            </div>
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <ul id="constraints">
+                <li id='six' class='not-met'>contains at least six characters</li>
+                <li id='upper' class='not-met'>includes an uppercase letter</li>
+                <li id='lower' class='not-met'>includes a lowercase letter</li>
+                <li id='number' class='not-met'>includes a non-alphabetic character</li>
+            </ul>
+            <ul id="constraints1">
+                <li id='match' class='met'>matches</li>
+            </ul>
+            <div class="mb-3">
+                <label for="confirm_password" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+            </div>
+            <button class="btn btn-primary" id="create_user">Create User</button>
+        </form>
+    </div>
+  </main>
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+  <script>
+const metStyles = {
+  false: 'not-met',
+  true: 'met'
+}
+
+const signUp = document.getElementById('sign_up_btn')
+const createUserH1 = document.getElementById('create_user_h1')
+const password0 = document.getElementById('password')
+const password1 = document.getElementById('confirm_password')
+const firstName = document.getElementById('firstName')
+const lastName = document.getElementById('lastName')
+const email = document.getElementById('email')
+const register = document.getElementById('create_user')
+const loginContainer = document.getElementById('login_container')
+
+$(window).on('load', function() {
+    $('#login_container').show()
+    $('#create_user_container').hide()
+})
+signUp.addEventListener('click', function() {
+    $('#login_container').hide()
+    $('#create_user_container').show()
+})
+
+const constraints = [
+  {
+    element: document.getElementById('six'),
+    func: w => w.length >= 6
+  },
+  {
+    element: document.getElementById('upper'),
+    func: w => (/\p{Uppercase}/u).test(w)
+  },
+  {
+    element: document.getElementById('lower'),
+    func: w => (/\p{Lowercase}/u).test(w)
+  },
+  {
+    element: document.getElementById('number'),
+    func: w => (/\P{Letter}/u).test(w)
+  }
+]
+
+const validatePassword = function (aPassword) {
+  let isValid = true
+
+  for (const test of constraints) {
+    const met = test.func(aPassword)
+    test.element.className = metStyles[met]
+    isValid = isValid && met
+  }
+
+  return isValid
+}
+
+const checkPasswordsMatch = function (p0, p1) {
+  const match = document.getElementById('match')
+  const matches = p0 === p1
+
+  match.className = metStyles[matches]
+
+  return matches
+}
+
+const updateButton = function () {
+  const validPwd = validatePassword(password0.value)
+  const isValid = checkPasswordsMatch(password0.value, password1.value) &&
+    validPwd
+
+  register.disabled = !isValid
+  register.innerHTML = isValid ? 'Use this password' : 'Password not yet valid'
+
+  return isValid
+}
+
+password0.addEventListener('input', (e) => updateButton())
+password1.addEventListener('input', (e) => updateButton())
+
+// Submit passwords to the server only if they're valid.
+const submit = async function () {
+// Your code here //////////////////////////////////////////
+  if (updateButton()) {
+    createUserH1.textContent = 'Please wait'
+    const response = await fetch('/create_user', {
+      method: 'POST',
+      body: JSON.stringify({
+        firstName: firstName.value,
+        lastName: lastName.value,
+        email: email.value,
+        password: password0.value
+      }),
+      headers: { 'Content-Type': 'application/json' }
+    })
+    // Handle the server response here
+    const result = await response.json()
+    if (result.status === 'success') {
+        loginContainer.style.display = 'block'
+        createUserContainer.style.display = 'none'
+    } else {
+        createUserH1.textContent = 'Server error'
+    }
+  } else {
+    // Display an error message to the user
+    alert('The password does not meet the requirements.')
+  }
+// End of your code ////////////////////////////////////////
+}
+register.addEventListener('click', (e) => submit())
+  </script>
+</body>
+</html>

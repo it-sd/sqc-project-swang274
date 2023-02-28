@@ -14,7 +14,27 @@ const pool = new Pool({
   }
 })
 
-const query = async function (sql) {
+const validatePassword = function (aPassword) {
+    const constraints = [
+      w => w.length >= 6,
+      w => w.length <= 32,
+      w => (/\p{Uppercase}/u).test(w),
+      w => (/\p{Lowercase}/u).test(w),
+      w => (/\P{Letter}/u).test(w)
+    ]
+
+    let isValid = true
+    for (const constraint of constraints) {
+      isValid = isValid && constraint(aPassword)
+    }
+    return isValid
+}
+
+module.exports = {
+  validatePassword
+}
+
+const query = async function (sql, params) {
   if (typeof sql !== 'string') {
     throw new TypeError('Expected sql to be a string')
   }
@@ -24,7 +44,7 @@ const query = async function (sql) {
   let results = []
   try {
     client = await pool.connect()
-    const response = await client.query(sql)
+    const response = await client.query(sql, params)
     if (response && response.rows) {
     results = response.rows
     }
@@ -52,7 +72,27 @@ app
       })
   })
   .get('/', function (req, res) {
-    res.render('pages/index', {})
+    res.render('pages/login', {})
+  })
+  .post('/create_user', async function (req, res) {
+
+    const { password, firstName, lastName, email } = req.body
+    const isValid = validatePassword(password)
+    if (!isValid) {
+        res.status(400).send({ status: 'error' })
+    } else {
+        const insertSql = "INSERT INTO customer (firstName, lastName, email, password) VALUES ($1::VARCHAR, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR);"
+
+        const checkEmail = "SELECT * FROM customer WHERE email=$1::VARCHAR"
+        let result = await query(checkEmail, [email])
+        if (result.length == 0) {
+            await query(insertSql, [firstName, lastName, email, password])
+            res.status(200).send({ status: 'success' })
+        } else {
+            res.status(400).send({ status: 'user exists' })
+        }
+
+    }
   })
   .get('/about', function (req, res) {
     res.render('pages/about', {})
