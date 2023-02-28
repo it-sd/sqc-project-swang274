@@ -11,6 +11,8 @@ can help everyone in the group see the plans/notes for each trip stop.
 
 4. Hello from jzarins2!
 
+4. Hello from sschmitz14!
+
 ## ER Diagram
 ![er_diagram](./docs/er_diagram.jpg)
 
