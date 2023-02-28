@@ -8,5 +8,9 @@ can help everyone in the group see the plans/notes for each trip stop.
 
 [Render Site](https://trip-planner-2ozd.onrender.com)
 
+
+4. Hello from jzarins2!
+
 ## ER Diagram
 ![er_diagram](./docs/er_diagram.jpg)
+
