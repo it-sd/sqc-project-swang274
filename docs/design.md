@@ -11,6 +11,7 @@ Consistency creates a sense of predictability and familiarity for users, allowin
 ## Color Palette and Font Choices
 ![color_palette](color_palette.jpg)
 ![font_choice](font_choice.jpg)
+[Alata](https://fonts.google.com/specimen/Alata)
 
 * Blue: Blue is often associated with travel and the ocean, which can be relevant for a trip planner website. It is also a calming color that can inspire trust and reliability, which may be important for users who are planning a trip.
 
