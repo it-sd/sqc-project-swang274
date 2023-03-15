@@ -1,5 +1,5 @@
 require('dotenv').config() // Read environment variables from .env
-const assert = require('node:assert/strict')
+// const assert = require('node:assert/strict')
 const process = require('node:process')
 const express = require('express')
 const path = require('path')
