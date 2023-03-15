@@ -1,6 +1,4 @@
 require('dotenv').config() // Read environment variables from .env
-// const assert = require('node:assert/strict')
-const process = require('node:process')
 const express = require('express')
 const path = require('path')
 const PORT = process.env.PORT || 5163
@@ -38,7 +36,7 @@ const query = async function (sql, params) {
   if (typeof sql !== 'string') {
     throw new TypeError('Expected sql to be a string')
   }
-  assert.strictEqual(typeof sql, 'string', 'Expected src to be a string')
+//   assert.strictEqual(typeof sql, 'string', 'Expected src to be a string')
   let client
   let results = []
   try {
