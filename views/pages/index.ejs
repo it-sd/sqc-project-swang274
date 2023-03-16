@@ -158,7 +158,56 @@
         $('#add_stop_btn').on('click', function () {
           addTripStop()
         })
+
+        $('.trip-row').on('click', function () {
+          showRoute($(this).data('trip-id'))
+        })
       })
+
+      function showRoute(tripId) {
+        const url = `/api/get_trip_stops?tripId=${tripId}`
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data)
+
+            for (const tripStop of data.tripStops) {
+              console.log(tripStop.latitude)
+              console.log(tripStop.longitude)
+
+              const marker = new google.maps.Marker({
+                position: { lat: parseFloat(tripStop.latitude), lng: parseFloat(tripStop.longitude) },
+                map: map,
+                title: tripStop.location
+              })
+              // Set the center of the map to the position of the last marker
+              map.panTo(marker.getPosition())
+            }
+
+            const directionsService = new google.maps.DirectionsService()
+            const directionsRenderer = new google.maps.DirectionsRenderer()
+            directionsRenderer.setMap(map)
+
+            const waypoints = [{ location: new google.maps.LatLng(37.7749, -122.4194) }, { location: new google.maps.LatLng(37.7914, -122.4082) }, { location: new google.maps.LatLng(37.7837, -122.4089) }]
+
+            const request = {
+              origin: new google.maps.LatLng(37.7749, -122.4194),
+              waypoints: waypoints,
+              destination: new google.maps.LatLng(37.7749, -122.4194),
+              travelMode: google.maps.TravelMode.DRIVING,
+              optimizeWaypoints: true
+            }
+
+            directionsService.route(request, function (result, status) {
+              if (status == google.maps.DirectionsStatus.OK) {
+                directionsRenderer.setDirections(result)
+              }
+            })
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+      }
 
       function addTripStop() {
         // Get the form element

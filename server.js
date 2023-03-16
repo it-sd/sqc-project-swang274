@@ -178,14 +178,27 @@ app
     const sql2 = 'DELETE FROM trip WHERE tripid = $1;'
     const params = [tripId]
     try {
-      console.log(sql1)
-      console.log(sql2)
       await query(sql1, params)
       await query(sql2, params)
       res.status(200).send('Trip deleted!')
     } catch (err) {
       console.error(err)
       res.status(500).send('Error deleting trip')
+    }
+  })
+
+  .get('/api/get_trip_stops', async (req, res) => {
+    const tripId = req.query.tripId
+
+    const sql = 'SELECT * FROM tripstop WHERE tripid = $1;'
+    const params = [tripId]
+
+    try {
+      const tripStops = await query(sql, params)
+      res.json({ tripStops: tripStops })
+    } catch (err) {
+      console.error(err)
+      res.status(500).send('Error getting trip stops')
     }
   })
 
