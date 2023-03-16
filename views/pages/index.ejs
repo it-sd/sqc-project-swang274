@@ -171,6 +171,7 @@
           .then((data) => {
             console.log(data)
 
+            let waypoints = []
             for (const tripStop of data.tripStops) {
               console.log(tripStop.latitude)
               console.log(tripStop.longitude)
@@ -180,20 +181,23 @@
                 map: map,
                 title: tripStop.location
               })
+              waypoints.push({
+                location: new google.maps.LatLng(tripStop.latitude, tripStop.longitude)
+              })
               // Set the center of the map to the position of the last marker
               map.panTo(marker.getPosition())
             }
+            console.log(waypoints)
+            console.log(waypoints[waypoints.length - 1].location)
 
             const directionsService = new google.maps.DirectionsService()
             const directionsRenderer = new google.maps.DirectionsRenderer()
             directionsRenderer.setMap(map)
 
-            const waypoints = [{ location: new google.maps.LatLng(37.7749, -122.4194) }, { location: new google.maps.LatLng(37.7914, -122.4082) }, { location: new google.maps.LatLng(37.7837, -122.4089) }]
-
             const request = {
-              origin: new google.maps.LatLng(37.7749, -122.4194),
+              origin: waypoints[0].location,
               waypoints: waypoints,
-              destination: new google.maps.LatLng(37.7749, -122.4194),
+              destination: waypoints[waypoints.length - 1].location,
               travelMode: google.maps.TravelMode.DRIVING,
               optimizeWaypoints: true
             }
