@@ -15,13 +15,7 @@ const pool = new Pool({
 })
 
 const validatePassword = function (aPassword) {
-  const constraints = [
-    (w) => w.length >= 6,
-    (w) => w.length <= 32,
-    (w) => /\p{Uppercase}/u.test(w),
-    (w) => /\p{Lowercase}/u.test(w),
-    (w) => /\P{Letter}/u.test(w)
-  ]
+  const constraints = [(w) => w.length >= 6, (w) => w.length <= 32, (w) => /\p{Uppercase}/u.test(w), (w) => /\p{Lowercase}/u.test(w), (w) => /\P{Letter}/u.test(w)]
 
   let isValid = true
   for (const constraint of constraints) {
@@ -87,8 +81,7 @@ app
     if (!isValid) {
       res.status(400).send({ status: 'error' })
     } else {
-      const insertSql =
-        'INSERT INTO customer (firstName, lastName, email, password) VALUES ($1::VARCHAR, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR);'
+      const insertSql = 'INSERT INTO customer (firstName, lastName, email, password) VALUES ($1::VARCHAR, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR);'
 
       const checkEmail = 'SELECT * FROM customer WHERE email=$1::VARCHAR'
       let result = await query(checkEmail, [email])
@@ -119,11 +112,14 @@ app
     }
   })
 
-  .get('/home', (req, res) => {
+  .get('/home', async (req, res) => {
     const userId = req.session.userId // get userId from session
     const title = 'Home Page'
     const content = '<h1>Welcome to my website</h1>'
-    res.render('pages/index', { title, content, userId })
+    const sql = 'SELECT * FROM trip WHERE customerid = $1;'
+    const trips = await query(sql, [userId])
+    console.log(trips)
+    res.render('pages/index', { title, content, userId, trips })
   })
 
   .get('/about', (req, res) => {
@@ -131,6 +127,26 @@ app
     const title = 'About Us'
     const content = '<h1>About Us</h1>'
     res.render('pages/about', { title, content, userId })
+  })
+
+  // Handle the POST request to save a new trip
+  .post('/api/trips', async (req, res) => {
+    // Extract the trip name and note from the request body
+    const tripName = req.body.name
+    const tripNote = req.body.note
+    const userId = req.body.customerId
+
+    // Insert the new trip into the database
+    const sql = 'INSERT INTO trip (trip_name, note, customerid) VALUES ($1, $2, $3)'
+    const params = [tripName, tripNote, userId]
+    try {
+      console.log(sql)
+      await query(sql, params)
+      res.status(200).send('New trip inserted successfully')
+    } catch (err) {
+      console.error(err)
+      res.status(500).send('Error inserting new trip into database')
+    }
   })
 
   .use((req, res) => {

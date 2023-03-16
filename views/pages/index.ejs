@@ -11,18 +11,49 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="stylesheet" href="/styles.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-      crossorigin="anonymous"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
   </head>
-  <body>
+  <body onload="initMap()">
     <!-- Include the header/navigation using EJS include -->
     <%- include('header.ejs') %>
     <div class="container">
       <h1>Trip Planner Home Page</h1>
+    </div>
+
+    <div class="container mb-5">
+      <div class="col-md-12">
+        <!-- New Trip Button -->
+        <div class="d-flex justify-content-between align-items-center">
+          <h4>Trip List</h4>
+          <button type="button" class="btn btn-primary" id="new_trip">New Trip</button>
+        </div>
+      </div>
+      <div class="container row">
+        <div class="col-md-12">
+          <!-- Trip List Table -->
+          <% if (typeof trips === 'undefined') { %>
+          <div>Add a Trip to Start with...</div>
+          <% } else { %>
+          <table class="table table-striped table-hover">
+            <!-- table headers -->
+            <thead>
+              <tr>
+                <th>Trip Name</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for (const trip of trips) { %>
+              <tr class="trip-row" data-trip-id="<%= trip.tripid %>">
+                <td><%= trip.trip_name %></td>
+                <td><%= trip.note %></td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+          <% } %>
+        </div>
+      </div>
     </div>
 
     <div class="container">
@@ -34,46 +65,126 @@
 
         <div class="col-5">
           <h3>Add a Trip Stop</h3>
-          <form>
-            <div class="mb-3">
-              <label for="stopName" class="form-label">Stop Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="stopName"
-                placeholder="Enter stop name"
-              />
-            </div>
-            <div class="mb-3">
-              <label for="stopLocation" class="form-label">Location</label>
-              <input
-                type="text"
-                class="form-control"
-                id="stopLocation"
-                placeholder="Enter location"
-              />
-            </div>
-            <div class="mb-3">
-              <label for="stopDate" class="form-label">Date</label>
-              <input type="date" class="form-control" id="stopDate" />
-            </div>
-            <button type="submit" class="btn btn-primary">Add Stop</button>
-          </form>
+          <div class="mb-3">
+            <label for="stopName" class="form-label">Stop Name</label>
+            <input type="text" class="form-control" id="stopName" placeholder="Enter stop name" />
+          </div>
+          <div class="mb-3">
+            <label for="stopLocation" class="form-label">Location</label>
+            <input type="text" class="form-control" id="stopLocation" placeholder="Enter location" />
+          </div>
+          <div class="mb-3">
+            <label for="stopDate" class="form-label">Date</label>
+            <input type="date" class="form-control" id="stopDate" />
+          </div>
+          <button type="button" class="btn btn-primary">Add Stop</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- new trip modal -->
+    <div class="modal fade" id="newTripModal" tabindex="-1" aria-labelledby="newTripModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newTripModalLabel">Create New Trip</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- New Trip Form -->
+            <form id="newTripForm">
+              <div class="form-group">
+                <label for="tripName">Trip Name</label>
+                <input type="text" class="form-control" id="tripName" name="tripName" required />
+                <div class="invalid-feedback">Please enter a trip name.</div>
+              </div>
+              <div class="form-group">
+                <label for="tripNote">Note</label>
+                <textarea class="form-control" id="tripNote" name="tripNote" required></textarea>
+                <div class="invalid-feedback">Please enter a trip note.</div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="save_new_trip">Save</button>
+          </div>
         </div>
       </div>
     </div>
 
     <script>
+      $(function () {
+        $('#new_trip').on('click', function () {
+          $('#newTripModal').modal('show')
+        })
+
+        $('#save_new_trip').on('click', function () {
+          saveNewTrip()
+          $('#newTripModal').modal('hide')
+        })
+
+        $('.trip-row').on('click', function () {
+          $('.trip-row').removeClass('table-info')
+          $(this).toggleClass('table-info')
+        })
+      })
+
+      function saveNewTrip() {
+        // Get the form element
+        const form = $('#newTripForm').get(0)
+
+        // Check if the form is valid
+        if (!form.checkValidity()) {
+          // If the form is invalid, prevent submission and display the error messages
+          event.preventDefault()
+          event.stopPropagation()
+          form.classList.add('was-validated')
+          return
+        }
+
+        // Get the trip name and note from the form
+        const tripName = $('#tripName').val()
+        const tripNote = $('#tripNote').val()
+        const userId = $('#hdn_user_id').val()
+
+        // Create a new trip object
+        const newTrip = {
+          name: tripName,
+          note: tripNote,
+          customerId: userId
+        }
+
+        // Send a POST request to save the new trip
+        fetch('/api/trips', {
+          method: 'POST',
+          body: JSON.stringify(newTrip),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then((response) => {
+            if (response.ok) {
+              // Trip saved successfully, do something here
+            } else {
+              // Trip not saved, handle the error here
+            }
+          })
+          .catch((error) => {
+            // Handle the fetch error here
+          })
+      }
+
+      let map
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
           center: { lat: -34.397, lng: 150.644 },
           zoom: 8
         })
+
         var geocoder = new google.maps.Geocoder()
-        var searchButton = document.getElementById('searchButton')
-        searchButton.addEventListener('click', function () {
-          var inputField = document.getElementById('inputField')
-          var placeName = inputField.value
+        $('#stopLocation').on('change', function () {
+          const placeName = $('#stopLocation').val()
           geocoder.geocode({ address: placeName }, function (results, status) {
             if (status === 'OK') {
               var location = results[0].geometry.location
@@ -82,21 +193,15 @@
                 position: location
               })
               map.setCenter(location)
+              $
+              console.log(location)
             } else {
-              alert(
-                'Geocode was not successful for the following reason: ' + status
-              )
+              alert('Geocode was not successful for the following reason: ' + status)
             }
           })
         })
       }
-
-      window.initMap = initMap
     </script>
-    <script
-      async
-      defer
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAa2sEK-2f8nUn1yNBifeh7fv0COj7gNjo&callback=initMap"
-    ></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAa2sEK-2f8nUn1yNBifeh7fv0COj7gNjo&callback=initMap"></script>
   </body>
 </html>

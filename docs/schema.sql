@@ -10,7 +10,8 @@ CREATE TABLE customer(
 DROP TABLE IF EXISTS trip;
 CREATE TABLE trip(
   tripID SERIAL PRIMARY KEY,
-  customerID INTEGER  NOT NULL,
+  customerID INTEGER NOT NULL,
+  trip_name VARCHAR(30),
   note VARCHAR(100)
 );
 
@@ -18,7 +19,7 @@ DROP TABLE IF EXISTS tripStop;
 CREATE TABLE tripStop(
   tripStopID SERIAL PRIMARY KEY,
   tripID INTEGER NOT NULL,
-  stopOrder INTEGER,
+  stop_name VARCHAR(30),
   note VARCHAR(100),
   longitude Decimal(15, 4) NOT NULL,
   latitude Decimal(15, 4) NOT NULL
