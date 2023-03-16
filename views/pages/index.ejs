@@ -11,12 +11,92 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="stylesheet" href="/styles.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
   </head>
   <body>
     <!-- Include the header/navigation using EJS include -->
-    <% include header.ejs %>
+    <%- include('header.ejs') %>
     <div class="container">
       <h1>Trip Planner Home Page</h1>
     </div>
+
+    <div class="container">
+      <div class="row">
+        <!-- google map -->
+        <div class="col-7">
+          <div id="map" style="height: 500px"></div>
+        </div>
+
+        <div class="col-5">
+          <h3>Add a Trip Stop</h3>
+          <form>
+            <div class="mb-3">
+              <label for="stopName" class="form-label">Stop Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="stopName"
+                placeholder="Enter stop name"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="stopLocation" class="form-label">Location</label>
+              <input
+                type="text"
+                class="form-control"
+                id="stopLocation"
+                placeholder="Enter location"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="stopDate" class="form-label">Date</label>
+              <input type="date" class="form-control" id="stopDate" />
+            </div>
+            <button type="submit" class="btn btn-primary">Add Stop</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: { lat: -34.397, lng: 150.644 },
+          zoom: 8
+        })
+        var geocoder = new google.maps.Geocoder()
+        var searchButton = document.getElementById('searchButton')
+        searchButton.addEventListener('click', function () {
+          var inputField = document.getElementById('inputField')
+          var placeName = inputField.value
+          geocoder.geocode({ address: placeName }, function (results, status) {
+            if (status === 'OK') {
+              var location = results[0].geometry.location
+              var marker = new google.maps.Marker({
+                map: map,
+                position: location
+              })
+              map.setCenter(location)
+            } else {
+              alert(
+                'Geocode was not successful for the following reason: ' + status
+              )
+            }
+          })
+        })
+      }
+
+      window.initMap = initMap
+    </script>
+    <script
+      async
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAa2sEK-2f8nUn1yNBifeh7fv0COj7gNjo&callback=initMap"
+    ></script>
   </body>
 </html>

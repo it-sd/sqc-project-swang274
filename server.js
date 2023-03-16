@@ -4,6 +4,8 @@ const path = require('path')
 const PORT = process.env.PORT || 5163
 const app = express()
 const { Pool } = require('pg')
+const cookieParser = require('cookie-parser')
+const sessions = require('express-session')
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -36,7 +38,7 @@ const query = async function (sql, params) {
   if (typeof sql !== 'string') {
     throw new TypeError('Expected sql to be a string')
   }
-//   assert.strictEqual(typeof sql, 'string', 'Expected src to be a string')
+  //   assert.strictEqual(typeof sql, 'string', 'Expected src to be a string')
   let client
   let results = []
   try {
@@ -57,6 +59,13 @@ app
   .use(express.static(path.join(__dirname, 'static')))
   .use(express.json())
   .use(express.urlencoded({ extended: true }))
+  .use(
+    sessions({
+      secret: 'my-secret-key',
+      resave: false,
+      saveUninitialized: false
+    })
+  )
   .set('views', path.join(__dirname, 'views'))
   .set('view engine', 'ejs')
   .get('/health', (req, res) => {
@@ -94,32 +103,34 @@ app
 
   .post('/login', async function (req, res) {
     const { email, password } = req.body
-    const sql = `SELECT password FROM customer WHERE email = '${email}';`
+    const sql = `SELECT customerID, password FROM customer WHERE email = '${email}';`
 
     const result = await query(sql)
     // Check if username and password are valid
-    console.log(result[0]['password'])
-    console.log(password)
+    console.log(result)
 
     if (result.length > 0 && result[0].password === password) {
       // Set a session variable to indicate that the user is logged in
-      //   req.session.loggedIn = true
+      req.session.userId = result[0].customerid
       res.sendStatus(200) // Send a 200 OK response
     } else {
+      res.render('pages/login', { message: 'Invalid email or password.' })
       res.sendStatus(401) // Send a 401 Unauthorized response
     }
   })
 
   .get('/home', (req, res) => {
+    const userId = req.session.userId // get userId from session
     const title = 'Home Page'
     const content = '<h1>Welcome to my website</h1>'
-    res.render('pages/index', { title, content })
+    res.render('pages/index', { title, content, userId })
   })
 
   .get('/about', (req, res) => {
+    const userId = req.session.userId // get userId from session
     const title = 'About Us'
     const content = '<h1>About Us</h1>'
-    res.render('pages/about', { title, content })
+    res.render('pages/about', { title, content, userId })
   })
 
   .use((req, res) => {
