@@ -149,6 +149,46 @@ app
     }
   })
 
+  .post('/api/addStop', async (req, res) => {
+    // Extract the trip name and note from the request body
+    const tripId = req.body.tripId
+    const stopName = req.body.stopName
+    const note = req.body.note
+    const longitude = req.body.longitude
+    const latitude = req.body.latitude
+    const location = req.body.location
+
+    // Insert the new trip into the database
+    const sql = 'INSERT INTO tripstop (tripid, stop_name, note, longitude, latitude, location) VALUES ($1, $2, $3, $4, $5, $6);'
+    const params = [tripId, stopName, note, longitude, latitude, location]
+    try {
+      console.log(sql)
+      await query(sql, params)
+      res.status(200).send('New trip stop inserted successfully')
+    } catch (err) {
+      console.error(err)
+      res.status(500).send('Error inserting new trip stop into database')
+    }
+  })
+
+  .post('/api/deleteTrip', async (req, res) => {
+    const tripId = req.body.tripId
+
+    const sql1 = 'DELETE FROM tripstop WHERE tripid = $1;'
+    const sql2 = 'DELETE FROM trip WHERE tripid = $1;'
+    const params = [tripId]
+    try {
+      console.log(sql1)
+      console.log(sql2)
+      await query(sql1, params)
+      await query(sql2, params)
+      res.status(200).send('Trip deleted!')
+    } catch (err) {
+      console.error(err)
+      res.status(500).send('Error deleting trip')
+    }
+  })
+
   .use((req, res) => {
     res.status(404).render('pages/error', {})
   }) // error-handling

@@ -22,7 +22,8 @@ CREATE TABLE tripStop(
   stop_name VARCHAR(30),
   note VARCHAR(100),
   longitude Decimal(15, 4) NOT NULL,
-  latitude Decimal(15, 4) NOT NULL
+  latitude Decimal(15, 4) NOT NULL,
+  location VARCHAR(40)
 );
 
 ALTER TABLE tripStop
