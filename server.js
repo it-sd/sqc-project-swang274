@@ -87,7 +87,7 @@ app
       let result = await query(checkEmail, [email])
       if (result.length == 0) {
         await query(insertSql, [firstName, lastName, email, password])
-        res.status(200).send({ status: 'success' })
+        res.status(200).send({ status: 'success', url: '/home' })
       } else {
         res.status(400).send({ status: 'user exists' })
       }
@@ -105,7 +105,7 @@ app
     if (result.length > 0 && result[0].password === password) {
       // Set a session variable to indicate that the user is logged in
       req.session.userId = result[0].customerid
-      res.render('/index', {})
+      res.sendStatus(200) // Send a 200 OK response
     } else {
       res.render('pages/login', { message: 'Invalid email or password.' })
       res.sendStatus(401) // Send a 401 Unauthorized response
