@@ -106,6 +106,7 @@ app
       // Set a session variable to indicate that the user is logged in
       req.session.userId = result[0].customerid
       res.sendStatus(200) // Send a 200 OK response
+      console.log(req.session.userId)
     } else {
       res.render('pages/login', { message: 'Invalid email or password.' })
       res.sendStatus(401) // Send a 401 Unauthorized response
